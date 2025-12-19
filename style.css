@@ -15,6 +15,18 @@ body {
     padding: 20px;
 }
 
+/* Classe para as caixas de código SQL */
+.sql-box {
+    width: 100%;
+    background-color: #000;
+    color: #0f0; /* Verde Hacker */
+    border: 1px solid #555;
+    padding: 10px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    border-radius: 5px;
+    text-align: left;
+    resize: vertical; /* Permite o usuário aumentar a caixa se quiser */
+}
 .container {
     max-width: 1200px;
     margin: 0 auto;

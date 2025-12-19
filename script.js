@@ -82,7 +82,7 @@ function linspace(start, end, num) {
 }
 
 // Gera cor RGBA baseada no comprimento de onda
-// --- FUNÇÃO CORRIGIDA: Cores Vibrantes ---
+// --- FUNÇÃO CORRIGIDA: Cores Vibrantes --- (saída em texto)
 function wavelengthToColor(wavelength, alpha = 1.0) {
     let r, g, b;
     if (wavelength >= 380 && wavelength < 440) {
@@ -105,6 +105,60 @@ function wavelengthToColor(wavelength, alpha = 1.0) {
     return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${alpha})`;
 }
 
+
+// --- FUNÇÃO AUXILIAR: CONVERTE COMPRIMENTO DE ONDA (nm) EM COR (RGB) ---
+function wavelengthToRGB(Wavelength) {
+    let Red, Green, Blue;
+
+    if (Wavelength >= 380 && Wavelength < 440) {
+        Red = -(Wavelength - 440) / (440 - 380);
+        Green = 0.0;
+        Blue = 1.0;
+    } else if (Wavelength >= 440 && Wavelength < 490) {
+        Red = 0.0;
+        Green = (Wavelength - 440) / (490 - 440);
+        Blue = 1.0;
+    } else if (Wavelength >= 490 && Wavelength < 510) {
+        Red = 0.0;
+        Green = 1.0;
+        Blue = -(Wavelength - 510) / (510 - 490);
+    } else if (Wavelength >= 510 && Wavelength < 580) {
+        Red = (Wavelength - 510) / (580 - 510);
+        Green = 1.0;
+        Blue = 0.0;
+    } else if (Wavelength >= 580 && Wavelength < 645) {
+        Red = 1.0;
+        Green = -(Wavelength - 645) / (645 - 580);
+        Blue = 0.0;
+    } else if (Wavelength >= 645 && Wavelength <= 780) {
+        Red = 1.0;
+        Green = 0.0;
+        Blue = 0.0;
+    } else {
+        Red = 0.0;
+        Green = 0.0;
+        Blue = 0.0;
+    }
+
+    // Fator de queda de intensidade nas bordas do espectro visível
+    let factor;
+    if (Wavelength >= 380 && Wavelength < 420) {
+        factor = 0.3 + 0.7 * (Wavelength - 380) / (420 - 380);
+    } else if (Wavelength >= 420 && Wavelength < 700) {
+        factor = 1.0;
+    } else if (Wavelength >= 700 && Wavelength <= 780) {
+        factor = 0.3 + 0.7 * (780 - Wavelength) / (780 - 700);
+    } else {
+        factor = 0.0;
+    }
+
+    // Ajusta intensidade e converte para 0-255
+    const R = Math.floor(Red * factor * 255);
+    const G = Math.floor(Green * factor * 255);
+    const B = Math.floor(Blue * factor * 255);
+
+    return [R, G, B];
+}
 // --- 3. LÓGICA DO GRÁFICO (Etapa 1) ---
 
 function atualizarGraficoEtapa1() {
@@ -618,6 +672,8 @@ let chart3 = null;
 
 // --- Função atualizarGraficoEtapa3 Atualizada (Alta Resolução) ---
 
+// --- Função atualizarGraficoEtapa3 Atualizada e Corrigida ---
+
 function atualizarGraficoEtapa3() {
     // 1. Capturar Inputs
     const temp = parseFloat(document.getElementById('temp_e3_slider').value);
@@ -630,78 +686,52 @@ function atualizarGraficoEtapa3() {
     document.getElementById('val-logg-e3').innerText = log_g;
     document.getElementById('val-xmin-e3').innerText = xmin;
     document.getElementById('val-xmax-e3').innerText = xmax;
-    // --- MUDANÇA: COR DINÂMICA DA CLASSE ---
-    const classe = get_classe_espectral(temp); // Calcula a letra
-    const spanClasse3 = document.getElementById('calc-classe-e3');
     
-    // 1. Define o texto (Letra)
+    // Cor Dinâmica da Classe
+    const classe = get_classe_espectral(temp);
+    const spanClasse3 = document.getElementById('calc-classe-e3');
     spanClasse3.innerText = classe;
     
-    // 2. Define a cor baseada na temperatura (usando a tabela CORES_CLASSES)
-    const corClasse = CORES_CLASSES[classe] || "#ffffff"; // Branco se der erro
-    
+    const corClasse = CORES_CLASSES[classe] || "#ffffff";
     spanClasse3.style.color = corClasse;
     spanClasse3.style.fontWeight = "bold";  
     spanClasse3.style.fontStyle = "normal"; 
-    spanClasse3.style.textShadow = `0 0 10px ${corClasse}`; // Efeito neon
+    spanClasse3.style.textShadow = `0 0 10px ${corClasse}`;
 
-    // 2. Gerar Dados
-    // CORREÇÃO CRÍTICA: Aumentado para 4000 pontos (igual ao Python original)
-    // Isso garante que linhas finas (log g baixo) não "sumam" ou percam intensidade visualmente
+    // 2. Gerar Dados (4000 pontos para alta resolução)
     const wavelengths = linspace(xmin, xmax, 4000); 
 
-    // A. Fluxo Contínuo (Planck)
+    // A. Fluxo Contínuo
     const fluxoContinuo = wavelengths.map(wl => planck(wl, temp));
     const maxFluxo = Math.max(...fluxoContinuo) || 1;
     const continuoNorm = fluxoContinuo.map(v => v / maxFluxo);
 
     // B. Fluxo com Absorção
-    // Copia o array do contínuo para começar a subtrair
     let fluxoFinal = [...fluxoContinuo]; 
-
-    // Lógica de largura baseada na gravidade (log g)
-    // Python: largura_base = 0.2 + (log_g - 1.0) * 0.3
     const larguraBase = 0.2 + (log_g - 1.0) * 0.3;
 
-    // Loop por cada elemento para calcular a "mordida" no espectro
     for (const [nome, params] of Object.entries(PARAMETROS_INTENSIDADE)) {
         const [picoT, larguraT, fatorEscala] = params;
 
-        // Regras de Corte (Física)
         if (LINHAS_QUENTES.includes(nome) && temp < 7500) continue;
         if (LINHAS_FRIAS.includes(nome) && temp > 8000) continue;
         if (nome === "Fe II" && temp < 4000) continue;
 
-        // Cálculo da Intensidade Relativa
         let intensidadeRelativa = Math.exp( -Math.pow(temp - picoT, 2) / (2 * Math.pow(larguraT, 2)) );
 
-        // Ajustes Especiais
-        if (nome === "H" && temp >= 10000) {
-            intensidadeRelativa = Math.max(intensidadeRelativa, 0.15);
-        }
-        if (nome === "TiO") {
-            intensidadeRelativa = 1 / (1 + Math.exp(0.005 * (temp - 3600)));
-        }
+        if (nome === "H" && temp >= 10000) intensidadeRelativa = Math.max(intensidadeRelativa, 0.15);
+        if (nome === "TiO") intensidadeRelativa = 1 / (1 + Math.exp(0.005 * (temp - 3600)));
 
         if (intensidadeRelativa > 0.05) {
             const larguraLinha = (nome === "TiO") ? 8.0 : larguraBase;
-
             if (LINHAS_ATLAS[nome]) {
                 LINHAS_ATLAS[nome].linhas.forEach(linhaPos => {
                     if (linhaPos >= xmin - 20 && linhaPos <= xmax + 20) {
-                        
-                        // Subtração Gaussiana
-                        // Com 4000 pontos, a varredura captura o pico corretamente
                         for (let i = 0; i < wavelengths.length; i++) {
                             const wl = wavelengths[i];
-                            // Otimização: calcula apenas perto da linha (4 sigmas)
                             if (Math.abs(wl - linhaPos) < larguraLinha * 4) { 
                                 const continuoLocal = fluxoContinuo[i];
-                                
-                                // Esta profundidade é fixa baseada na Temperatura.
-                                // O log_g afeta apenas a 'larguraLinha' abaixo.
                                 const profundidade = (0.95 * intensidadeRelativa * fatorEscala) * continuoLocal;
-                                
                                 const gaussiana = profundidade * Math.exp( -Math.pow(wl - linhaPos, 2) / (2 * Math.pow(larguraLinha, 2)) );
                                 fluxoFinal[i] -= gaussiana;
                             }
@@ -712,13 +742,12 @@ function atualizarGraficoEtapa3() {
         }
     }
 
-    // Normalizar
     const finalNorm = fluxoFinal.map(v => Math.max(0, v) / maxFluxo);
 
     // 3. Renderizar Gráfico
     const ctx = document.getElementById('graficoEtapa3').getContext('2d');
-    
     const picoWien = calcular_pico_wien(temp);
+    
     const annotationsE3 = {
         pico: {
             type: 'line',
@@ -735,6 +764,10 @@ function atualizarGraficoEtapa3() {
         chart3.options.scales.x.min = xmin;
         chart3.options.scales.x.max = xmax;
         chart3.options.plugins.annotation.annotations = annotationsE3;
+        
+        // --- CORREÇÃO: Desliga animação para alinhamento instantâneo ---
+        chart3.options.animation = false; 
+        
         chart3.update();
     } else {
         chart3 = new Chart(ctx, {
@@ -745,42 +778,44 @@ function atualizarGraficoEtapa3() {
                     {
                         label: 'Corpo Negro Ideal',
                         data: continuoNorm,
-                        borderColor: 'dimgray',
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        pointRadius: 0,
-                        tension: 0.4
+                        borderColor: 'dimgray', borderWidth: 2, borderDash: [5, 5],
+                        pointRadius: 0, tension: 0.4
                     },
                     {
                         label: 'Espectro com Absorção',
                         data: finalNorm,
-                        borderColor: 'white',
-                        borderWidth: 2,
-                        pointRadius: 0,
-                        tension: 0.4
+                        borderColor: 'white', borderWidth: 2,
+                        pointRadius: 0, tension: 0.4
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: false, // <--- IMPORTANTE: Desliga animação inicial
+
+                // --- IMPORTANTE: Remove preenchimentos extras ---
+                layout: {
+                    padding: { left: 0, right: 0, top: 0, bottom: 0 }
+                },
+
                 interaction: { intersect: false, mode: 'index' },
                 scales: {
                     x: { 
                         type: 'linear', position: 'bottom',
                         min: xmin, max: xmax,
+                        offset: false, // <--- IMPORTANTE: Cola na borda
                         title: { display: true, text: 'Comprimento de Onda (nm)', color: '#fff' },
-                        ticks: { color: '#fff' }, grid: { color: '#444' }
+                        ticks: { color: '#fff' }, grid: { color: '#444' } 
                     },
                     y: {
-                        min: -0.05, max: 1.1,
+                        min: 0.0, max: 1.1,
                         title: { display: true, text: 'Intensidade Relativa', color: '#fff' },
-                        ticks: { color: '#fff', 
-                                callback: function(value) {
-                                // Se for maior que 1, esconde. Senão, mostra o valor normal.
-                                return value > 1.0 ? null : value;
-                            }
-                         }, grid: { color: '#444' }
+                        ticks: { 
+                            color: '#fff', 
+                            callback: function(value) { return value > 1.0 ? null : value; }
+                        }, 
+                        grid: { color: '#444' }
                     }
                 },
                 plugins: {
@@ -790,9 +825,11 @@ function atualizarGraficoEtapa3() {
             }
         });
     }
+
+    // Desenha a faixa exatamente após o gráfico atualizar
     requestAnimationFrame(() => {
-            desenharFaixaDinamica('faixaEspectralE3', wavelengths, finalNorm, chart3);
-        });
+        desenharFaixaDinamica('faixaEspectralE3', wavelengths, finalNorm, chart3);
+    });
 }
 
 // Inicialização dos Sliders da Etapa 3
@@ -952,7 +989,7 @@ function atualizarGraficoEtapa4() {
                 scales: {
                     x: { type: 'linear', display: false, min: xmin, max: xmax }, 
                     y: { 
-                        min: -0.05, max: 1.1, 
+                        min: 0.0, max: 1.1, 
                         title: { display: true, text: 'Intensidade Relativa', color: '#fff' }, 
                         grid: { color: '#444' }, 
                         ticks: { color: '#ccc', callback: function(val) { return val > 1.0 ? null : val; } } 
@@ -1391,123 +1428,73 @@ function baixarRelatorioE6() {
     document.body.removeChild(link);
 }
 
-// --- NOVA FUNÇÃO AUXILIAR: Wavelength para RGB (Objeto) ---
-// Retorna {r, g, b} puros para podermos manipular a intensidade
-function getWavelengthRGB(wavelength) {
-    let r, g, b;
-    if (wavelength >= 380 && wavelength < 440) {
-        r = -(wavelength - 440) / (440 - 380); g = 0.0; b = 1.0;
-    } else if (wavelength >= 440 && wavelength < 490) {
-        r = 0.0; g = (wavelength - 440) / (490 - 440); b = 1.0;
-    } else if (wavelength >= 490 && wavelength < 510) {
-        r = 0.0; g = 1.0; b = -(wavelength - 510) / (510 - 490);
-    } else if (wavelength >= 510 && wavelength < 580) {
-        r = (wavelength - 510) / (580 - 510); g = 1.0; b = 0.0;
-    } else if (wavelength >= 580 && wavelength < 645) {
-        r = 1.0; g = -(wavelength - 645) / (645 - 580); b = 0.0;
-    } else if (wavelength >= 645 && wavelength < 781) {
-        r = 1.0; g = 0.0; b = 0.0;
-    } else {
-        r = 0.0; g = 0.0; b = 0.0; // Preto fora do visível
-    }
-    
-    // Fator de decaimento nas bordas do espectro visível para suavizar
-    let factor = 1.0;
-    if (wavelength > 700) factor = 0.3 + 0.7 * (780 - wavelength) / (780 - 700);
-    else if (wavelength < 420) factor = 0.3 + 0.7 * (wavelength - 380) / (420 - 380);
-
-    return {
-        r: Math.floor(r * 255 * factor),
-        g: Math.floor(g * 255 * factor),
-        b: Math.floor(b * 255 * factor)
-    };
-}
-
 
 // --- FUNÇÃO CORRIGIDA: Sincronização Perfeita com o Gráfico ---
-function desenharFaixaDinamica(canvasId, wavelengths, fluxos, chartRef) {
+function desenharFaixaDinamica(canvasId, wavelengths, fluxo, chartRef) {
     const canvas = document.getElementById(canvasId);
+    if (!canvas || !chartRef) return; // Precisa do gráfico para alinhar
+
     const ctx = canvas.getContext('2d');
 
-    // 1. Ajustar tamanho do canvas para corresponder ao visual
-    // Importante para alinhar pixel a pixel com o gráfico de cima
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    canvas.width = width;
-    canvas.height = height;
+    // --- 1. CONFIGURAÇÃO DE ALTA RESOLUÇÃO (RETINA) ---
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    
+    // Define tamanho interno maior para nitidez
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    
+    // Normaliza para desenhar com coordenadas CSS
+    ctx.scale(dpr, dpr);
 
+    const width = rect.width;
+    const height = rect.height;
+    
     // Limpa tudo
     ctx.clearRect(0, 0, width, height);
 
-    // 2. Obter as margens EXATAS do gráfico Chart.js
-    // chartRef.scales.x.left = onde começa o eixo X (em pixels)
-    // chartRef.scales.x.right = onde termina o eixo X
-    // chartRef.width = largura total do gráfico
-    
-    let leftMargin = 0;
-    let rightMargin = width;
-    
-    // Se o gráfico foi passado e já renderizou, pegamos as medidas reais
-    if (chartRef && chartRef.scales && chartRef.scales.x) {
-        // Precisamos ajustar a proporção caso os canvas tenham larguras levemente diferentes
-        const ratio = width / chartRef.width;
-        leftMargin = chartRef.scales.x.left * ratio;
-        rightMargin = chartRef.scales.x.right * ratio;
+    // --- 2. O SEGREDO DO ALINHAMENTO ---
+    // Pegamos a escala X do gráfico de cima emprestada
+    const scaleX = chartRef.scales.x;
+
+    // Loop pelos comprimentos de onda
+    for (let i = 0; i < wavelengths.length - 1; i++) {
+        const wl = wavelengths[i];
+        const wlNext = wavelengths[i+1];
+        
+        // Intensidade para brilho da cor (média entre os dois pontos)
+        const intensidade = (fluxo[i] + fluxo[i+1]) / 2;
+
+        // --- AQUI ESTÁ A CORREÇÃO ---
+        // Em vez de calcular na mão, pedimos ao Chart.js a posição exata do pixel
+        // Se o gráfico tiver margem do Eixo Y, essa função já considera!
+        const xPixelStart = scaleX.getPixelForValue(wl);
+        const xPixelEnd = scaleX.getPixelForValue(wlNext);
+        
+        // Se o pixel estiver fora da área visível, pula
+        if (xPixelStart < 0 || xPixelStart > width) continue;
+
+        // Calcular a Cor
+        let [r, g, b] = wavelengthToRGB(wl);
+        
+        // Aplica a escuridão da linha de absorção
+        // Se intensidade for 1 (topo), cor normal. Se for 0 (fundo), preto.
+        // Adicionei um fator 0.8 para as linhas ficarem bem escuras e visíveis
+        const fatorEscuro = Math.pow(intensidade, 1.5); // Exponencial para destacar as linhas
+        
+        r = Math.floor(r * fatorEscuro);
+        g = Math.floor(g * fatorEscuro);
+        b = Math.floor(b * fatorEscuro);
+
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        
+        // Desenha o retângulo exatamente onde o gráfico diz
+        // O "+ 1" na largura é para evitar micro-linhas pretas entre as barras (anti-aliasing)
+        const larguraBarra = Math.max(xPixelEnd - xPixelStart, 0.5); 
+        ctx.fillRect(xPixelStart, 0, larguraBarra + 1, height);
     }
-
-    const drawingWidth = rightMargin - leftMargin;
-
-    // Cria a imagem pixel a pixel
-    const imageData = ctx.createImageData(width, height);
-    const data = imageData.data;
-    const numPoints = wavelengths.length;
-
-    for (let x = 0; x < width; x++) {
-        let rFinal = 0, gFinal = 0, bFinal = 0;
-
-        // Só desenhamos se estivermos DENTRO da área do gráfico (entre as margens)
-        if (x >= leftMargin && x <= rightMargin) {
-            
-            // 3. Mapeamento Corrigido:
-            // O pixel 'x' dentro da área de desenho corresponde a qual % dos dados?
-            const percent = (x - leftMargin) / drawingWidth;
-            
-            // Garante que não estoure o array
-            if (percent >= 0 && percent <= 1) {
-                // Interpolação para achar o comprimento de onda atual
-                const wl_atual = wavelengths[0] + percent * (wavelengths[numPoints - 1] - wavelengths[0]);
-                
-                // Achar índice da intensidade correspondente
-                const index = Math.floor(percent * (numPoints - 1));
-                
-                let intensidade = fluxos[index];
-                if (intensidade < 0) intensidade = 0;
-
-                // Obter cor base
-                const color = getWavelengthRGB(wl_atual);
-
-                // Aplicar absorção
-                rFinal = color.r * intensidade;
-                gFinal = color.g * intensidade;
-                bFinal = color.b * intensidade;
-            }
-        } 
-        // Se x < leftMargin ou x > rightMargin, r/g/b ficam 0 (Preto), criando a margem escura
-
-        // 4. Pintar a coluna vertical
-        for (let y = 0; y < height; y++) {
-            const pixelIndex = (y * width + x) * 4;
-            data[pixelIndex] = rFinal;
-            data[pixelIndex + 1] = gFinal;
-            data[pixelIndex + 2] = bFinal;
-            data[pixelIndex + 3] = 255; // Opaco
-        }
-    }
-
-    ctx.putImageData(imageData, 0, 0);
 }
 
-// --- SISTEMA DE ZOOM DE IMAGEM ---
 
 function abrirZoom(elementoImg) {
     const modal = document.getElementById("modalZoom");

@@ -753,7 +753,7 @@
                     </summary>
                     
                     <p style="margin-top: 15px; color: #ccc;"><strong>1. Estrela de Sequência Principal (Tipo Solar)</strong></p>
-                    <textarea readonly style="width: 100%; height: 150px; background: #000; color: #0f0; border: 1px solid #555; padding: 10px; font-family: monospace; border-radius: 5px; text-align: left;">SELECT TOP 10 
+                    <textarea readonly class="sql-box" style="height: 150px;">SELECT TOP 10 
                     s.specobjid, 
                     s.subclass, 
                     p.LOGGADOP, 
@@ -767,7 +767,7 @@
                     AND p.FEHADOP BETWEEN -0.2 AND 0.2</textarea>
 
                     <p style="color: #ccc;"><strong>2. Estrela Gigante</strong></p>
-                    <textarea readonly style="width: 100%; height: 110px; background: #000; color: #0f0; border: 1px solid #555; padding: 10px; font-family: monospace; border-radius: 5px; text-align: left;">SELECT TOP 10 
+                    <textarea readonly class="sql-box" style="height: 110px;">SELECT TOP 10 
                     s.specobjid, 
                     s.subclass, 
                     p.LOGGADOP 
@@ -778,7 +778,7 @@
                     AND p.LOGGADOP BETWEEN 1.0 AND 3.5</textarea>
 
                     <p style="color: #ccc;"><strong>3. Estrela Supergigante</strong></p>
-                    <textarea readonly style="width: 100%; height: 110px; background: #000; color: #0f0; border: 1px solid #555; padding: 10px; font-family: monospace; border-radius: 5px; text-align: left;">SELECT TOP 10 
+                    <textarea readonly class="sql-box" style="height: 110px;">SELECT TOP 10 
                     s.specobjid, 
                     s.subclass, 
                     p.LOGGADOP 
@@ -790,7 +790,7 @@
 
                     <p style="color: #ccc;"><strong>4. Anã Branca</strong></p>
                     <p style="font-size: 0.8em; color: #888; margin-top: -10px; margin-bottom: 5px;">*Nota: Anãs Brancas não têm gravidade calculada na tabela padrão, então buscamos pela classe 'WD' ("White Dwarf").</p>
-                        <textarea readonly style="width: 100%; height: 110px; background: #000; color: #0f0; border: 1px solid #555; padding: 10px; font-family: monospace; border-radius: 5px; text-align: left;">SELECT TOP 10 
+                        <textarea readonly class="sql-box" style="height: 110px;">SELECT TOP 10 
                         s.specobjid, 
                         s.class, 
                         s.subClass, 
