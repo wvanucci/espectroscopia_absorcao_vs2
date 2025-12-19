@@ -1,0 +1,430 @@
+/* --- VARIÁVEIS DE COR (Fácil de mudar depois) --- */
+:root {
+    --bg-color: #0e1117;
+    --card-bg: #262730;
+    --text-color: #fafafa;
+    --accent-color: #4ea8de; /* O novo Azul Ciano Profissional */
+    --danger-color: #ff4b4b; /* Vermelho apenas para erros/remover */
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 { color: #ffffff; }
+
+/* --- SLIDERS (NOVO: Cor do slider) --- */
+input[type=range] {
+    width: 100%;
+    accent-color: #ff4b4b; /* Força a cor vermelha APENAS no slider */
+    cursor: pointer;
+}
+
+/* --- ESTILO DAS ABAS --- */
+.tabs {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.tab-btn {
+    background-color: transparent;
+    border: none;
+    color: #888;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.tab-btn:hover { color: #fff; }
+
+.tab-btn.active {
+    color: var(--accent-color); /* Azul Ciano */
+    border-bottom: 2px solid var(--accent-color);
+    font-weight: bold;
+}
+
+
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* --- CONTROLES --- */
+.controls {
+    display: flex;
+    gap: 20px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    border: 1px solid #444; /* Borda sutil para definição */
+}
+
+.control-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.chart-container {
+    position: relative;
+    background-color: #000;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid #333;
+}
+
+.chart-overlay-info {
+    position: absolute;
+    top: 15px;          /* Distância do topo */
+    right: 20px;         /* Distância da esquerda/direita (Canto Superior Esquerdo/direito) */
+    z-index: 10;        /* Garante que fique POR CIMA do gráfico */
+    
+    /* Visual de fundo semi-transparente para ler bem em cima das linhas */
+    background-color: rgba(30, 30, 30, 0.8); 
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    pointer-events: none; /* Permite clicar no gráfico "através" do texto */
+    
+    font-size: 0.9em;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-box {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--card-bg);
+    border-radius: 5px;
+    border-left: 4px solid var(--accent-color); /* Detalhe azul na lateral */
+}
+
+/* --- TABELAS --- */
+.table-container {
+    background-color: var(--card-bg);
+    padding: 15px;
+    border-radius: 10px;
+    overflow-x: auto;
+    border: 1px solid #444;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    color: #e0e0e0; /* Cinza claro para não cansar a vista */
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+}
+
+th {
+    background-color: #1f1f25;
+    color: var(--accent-color); /* Título em Azul */
+    font-weight: 600;
+}
+
+/* Campos de texto dentro da tabela e fora */
+input[type="text"], input[type="number"] {
+    background: #0e1117;
+    border: 1px solid #555;
+    color: #fff;
+    padding: 5px;
+    border-radius: 4px;
+    width: 90%;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent-color); /* Borda azul ao clicar */
+}
+
+/* --- BOTÕES --- */
+.btn-primary {
+    background-color: var(--accent-color); /* Azul */
+    color: #000; /* Texto preto para contraste máximo */
+    font-weight: bold;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: filter 0.2s;
+}
+
+.btn-primary:hover { 
+    filter: brightness(1.1); /* Brilha um pouco ao passar o mouse */
+}
+
+.btn-remove {
+    background-color: transparent;
+    border: 1px solid var(--danger-color); /* Vermelho */
+    color: var(--danger-color);
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.btn-remove:hover { 
+    background-color: var(--danger-color); 
+    color: white; 
+}
+
+/* Classes Específicas */
+.atlas-input { width: 80px; }
+.atlas-obs { width: 95%; }
+
+/* Sub-Abas (Etapa 6) */
+.sub-tab-btn {
+    background-color: #333;
+    color: #aaa;
+    border: 1px solid #444;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.sub-tab-btn:hover {
+    background-color: #444;
+    color: white;
+}
+
+.sub-tab-btn.active {
+    background-color: var(--accent-color);
+    color: #000;
+    font-weight: bold;
+    border-color: var(--accent-color);
+}
+
+/* Imagens */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Texto de destaque em vermelho (apenas onde necessário) */
+.highlight-red {
+    color: var(--danger-color);
+}
+
+/* --- ESTILO DOS EXPANDERS (DETAILS/SUMMARY) --- */
+details {
+    background-color: #262730; /* Fundo cinza escuro */
+    border: 1px solid #444;    /* Borda discreta quando fechado */
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+/* Quando aberto, a borda fica ROXA */
+details[open] {
+    border-color: #a855f7; 
+}
+
+summary {
+    color: #fafafa; /* Texto BRANCO para leitura fácil */
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+}
+
+/* Seta personalizada ROXA */
+summary::after {
+    content: '▼'; 
+    font-size: 0.8em;
+    color: #a855f7; /* Roxo vibrante */
+    margin-left: auto;
+    transition: transform 0.2s;
+}
+
+details[open] summary::after {
+    transform: rotate(180deg);
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+/* Badge para a Classe Espectral (Estilo Display de Instrumento) */
+.badge-classe {
+    display: inline-block;
+    background-color: #1e1e1e;   /* Fundo bem escuro, mas não preto total */
+    border: 1px solid #555;      /* Borda cinza neutra */
+    color: #ffffff;              /* Texto Branco */
+    padding: 2px 12px;           /* Espaçamento interno */
+    border-radius: 6px;          /* Bordas levemente arredondadas */
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace; /* Fonte de "Dados" */
+    font-size: 1.2em;            /* Um pouco maior que o texto normal */
+    font-weight: bold;
+    text-align: center;
+    min-width: 30px;             /* Garante que o 'I' e o 'M' tenham mesma largura */
+    vertical-align: middle;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5); /* Efeito de profundidade sutil */
+}
+/* --- SISTEMA DE ZOOM DE IMAGEM (LIGHTBOX) --- */
+
+/* 1. O Fundo Escuro (Overlay) */
+.modal-overlay {
+    display: none; /* Escondido por padrão */
+    position: fixed; 
+    z-index: 9999; /* Fica em cima de TUDO */
+    padding-top: 50px; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0, 0, 0, 0.9); /* Preto 90% transparente */
+    backdrop-filter: blur(5px); /* Desfoque bonito no fundo */
+}
+
+/* 2. A Imagem Expandida */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 1200px; /* Limite para telas gigantes */
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    animation-name: zoom;
+    animation-duration: 0.3s;
+}
+
+/* 3. Legenda (Opcional) */
+#modalCaption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    font-size: 1.1em;
+}
+
+/* 4. Botão de Fechar (X) */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--accent-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 5. Classe para adicionar nas imagens que podem ser clicadas */
+.zoomable-img {
+    cursor: zoom-in; /* Cursor vira uma lupa */
+    transition: 0.3s;
+    border: 2px solid transparent;
+}
+
+.zoomable-img:hover {
+    opacity: 0.9;
+    border-color: var(--accent-color); /* Borda colorida ao passar o mouse */
+}
+
+/* Animação de Zoom */
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+
+/* Ajuste para celular */
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 100%;
+  }
+}
+
+/* Container relativo para segurar o ícone no lugar certo */
+.img-container-zoom {
+    position: relative; /* Essencial para o ícone absoluto funcionar */
+    display: inline-block; /* Ajusta ao tamanho da imagem */
+    width: 100%;
+}
+
+/* O ícone de lupa flutuante */
+.zoom-icon-overlay {
+    position: absolute;
+    bottom: 10px;       /* 10px de baixo */
+    right: 10px;        /* 10px da direita */
+    background-color: rgba(0, 0, 0, 0.7); /* Fundo preto transparente */
+    color: #fff;
+    padding: 8px;
+    border-radius: 50%; /* Faz ficar redondinho */
+    font-size: 1.2em;
+    pointer-events: none; /* O CLIQUE PASSA DIRETO PELO ÍCONE E VAI PRA IMAGEM */
+    opacity: 0.7;
+    transition: 0.3s;
+}
+
+/* Quando passar o mouse na imagem, o ícone brilha */
+.img-container-zoom:hover .zoom-icon-overlay {
+    opacity: 1;
+    background-color: var(--accent-color); /* Fica da cor do tema */
+    transform: scale(1.1);
+}
+/* --- AJUSTES PARA MOBILE (Responsividade) --- */
+@media (max-width: 768px) {
+    /* Diminui as bordas da tela para aproveitar espaço */
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    /* Ajusta o tamanho da fonte dos botões das abas para não quebrar */
+    .tab-btn {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    /* Garante que os gráficos tenham altura mínima para serem tocáveis */
+    .chart-container {
+        min-height: 250px; 
+    }
+
+    /* Ajusta o tamanho dos textos de título */
+    h2 {
+        font-size: 1.4em;
+    }
+
+    /* Força os controles a ocuparem 100% da largura no celular */
+    .control-group {
+        min-width: 100%;
+    }
+}

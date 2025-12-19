@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador de Espectros Estelares</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>🔭 Espectroscopia com Luz Visível</h1>
+            <p>Bem-vindo ao Explorador de Espectros Estelares!</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('etapa1')">Etapa 1: Radiação Ideal</button>
+            <button class="tab-btn" onclick="openTab('etapa2')">Etapa 2: Atlas</button>
+            <button class="tab-btn" onclick="openTab('etapa3')">Etapa 3: Absorção</button>
+            <button class="tab-btn" onclick="openTab('etapa4')">Etapa 4: Investigação</button>
+            <button class="tab-btn" onclick="openTab('etapa5')">Etapa 5: Linhas de Referência</button>
+            <button class="tab-btn" onclick="openTab('etapa6')">Etapa 6: Dados Reais</button>
+            <button class="tab-btn" onclick="openTab('etapa7')">Etapa 7: Tutorial e Créditos</button>
+        </div>
+
+        <div id="etapa1" class="tab-content active">
+            <h2>Radiação ideal de estrelas</h2>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>Pico de Emissão (λ<sub>pico</sub>): <span id="val-pico">500</span> nm</label>
+                    <input type="range" id="pico_slider" min="50" max="3000" value="500" step="5">
+                </div>
+                <div class="control-group">
+                    <label>Escala Min (nm): <span id="val-xmin">0</span></label>
+                    <input type="range" id="xmin_slider" min="0" max="2000" value="0" step="10">
+                </div>
+                <div class="control-group">
+                    <label>Escala Max (nm): <span id="val-xmax">1500</span></label>
+                    <input type="range" id="xmax_slider" min="500" max="4000" value="1500" step="10">
+                </div>
+            </div>
+
+            <div class="chart-container" style="position: relative; height:450px; width:100%">
+                <canvas id="graficoEtapa1"></canvas>
+            </div>
+
+            <div class="info-box">
+                <p>Classe Espectral Estimada: <span id="calc-classe" class="badge-classe">M</span></p>
+            </div>
+
+            <hr style="margin: 30px 0; border-color: #333;">
+
+            <h3>Atividade Prática</h3>
+            
+            <p>Use o simulador acima para encontrar o comprimento de onda máximo (λ<sub>max</sub>) de diferentes classes de estrelas e anote na tabela abaixo para calcular suas temperaturas.</p>
+
+            <div style="background-color: var(--card-bg); border-left: 5px solid var(--accent-color); padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                <strong style="color: var(--accent-color);">📋 Instruções:</strong>
+                <ol style="margin-top: 10px; padding-left: 20px; line-height: 1.6;">
+                    <li>Use o simulador acima para encontrar o <strong>λ<sub>max</sub></strong> para cada classe espectral.</li>
+                    <li><strong>Observe o gráfico:</strong> Para cada classe, qual é a cor predominante que a estrela emite na faixa visível (entre 400 e 700 nm)? Onde a curva de intensidade é mais alta nessa faixa? Anote a cor (ex: "Azul", "Branco-azulado", "Branco", "Amarelo", "Laranja", "Vermelho").</li>
+                    <li>Preencha a tabela abaixo. Calcule a temperatura a partir da Lei de Wien.</li>
+                    <li>Ao final, responda à pergunta de conclusão.</li>
+                </ol>
+            </div>
+
+            <details>
+                    <summary>
+                        <span>🧮</span> Clique para ver a explicação e um Exemplo de Cálculo
+                    </summary>
+                    <div style="margin-top: 15px; color: #e0e0e0;">
+                        <h4 style="color: var(--accent-color); margin-bottom: 10px;">A Fórmula da Lei de Wien</h4>
+                        
+                        <div style="background: #111; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; border: 1px solid #333;">
+                            <span style="font-size: 1.5em; font-family: 'Times New Roman', serif;">
+                                T = 
+                                <div style="display: inline-block; vertical-align: middle; text-align: center;">
+                                    <div style="border-bottom: 1px solid white; padding-bottom: 2px;">b</div>
+                                    <div style="padding-top: 2px;">λ<sub>max</sub></div>
+                                </div>
+                            </span>
+                        </div>
+
+                        <ul style="line-height: 1.8;">
+                            <li><strong>T</strong> = Temperatura (em Kelvin)</li>
+                            <li><strong>λ<sub>max</sub></strong> = Comprimento de onda do pico (em <strong>metros</strong>)</li>
+                            <li><strong>b</strong> = 2.898 × 10<sup>-3</sup> m·K (Constante de Wien)</li>
+                        </ul>
+
+                        <p style="background: #3a2e05; padding: 10px; border-radius: 5px; border: 1px solid #665200; margin-top: 10px;">
+                            <strong>⚠️ Lembre-se de converter:</strong><br>
+                            1 nm = 1 × 10<sup>-9</sup> m.
+                        </p>
+
+                        <div style="background: #1e1e1e; padding: 15px; border-radius: 5px; margin-top: 15px; border-left: 4px solid #2ea043;">
+                            <strong>Exemplo de Cálculo:</strong><br>
+                            Para o Sol (Classe G), o pico é λ<sub>max</sub> ≈ 500 nm.<br><br>
+                            1. Converter nm para metros: 500 × 10<sup>-9</sup> m<br>
+                            2. Calcular: T = (2.898 × 10<sup>-3</sup>) / (500 × 10<sup>-9</sup>)<br>
+                            3. Resultado: <strong>T ≈ 5796 K</strong>
+                        </div>
+                    </div>
+            </details>
+
+            <div class="table-container">
+                <table id="tabela-observacoes">
+                    <thead>
+                        <tr>
+                            <th>Classe Espectral</th>
+                            <th>λ<sub>max</sub> (nm)</th>
+                            <th>Sua Temperatura (K)</th>
+                            <th>Cor Predominante</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn-primary" onclick="adicionarLinhaTabela()">+ Adicionar Observação</button>
+                <p style="font-size: 0.9em; color: #888;">Observações feitas: <span id="contador-obs">0</span>/6</p>
+            </div>
+
+            <div id="area-gabarito" style="display: none; margin-top: 30px; background: #1e3d2f; padding: 20px; border-radius: 10px; border: 1px solid #2ea043;">
+                <h3>✅ Gabarito da Atividade</h3>
+                <p>Parabéns! Confira seus cálculos abaixo:</p>
+                <table id="tabela-gabarito">
+                    <thead>
+                        <tr>
+                            <th>λ<sub>max</sub> Anotado</th>
+                            <th>Sua Temp. (K)</th>
+                            <th>Temp. Correta (K)</th>
+                            <th>Erro (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                
+                <div style="margin-top: 20px;">
+                    <h4>Conclusão</h4>
+                    <p>Baseado nos dados que você coletou na tabela, qual é a relação entre a <strong>temperatura</strong> de uma estrela e a <strong>cor</strong> que ela emite? Sua conclusão é diferente do que o senso comum nos diz sobre as cores azul e vermelho para frio e quente?</p>
+                    <textarea id="conclusao-txt" rows="4" style="width: 100%; padding: 10px;" placeholder="Escreva sua conclusão aqui..."></textarea>
+                    <br><br>
+                    <button class="btn-primary" onclick="baixarCSV()">📥 Baixar Relatório (CSV)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="etapa2" class="tab-content">
+            <h2>Atlas Espectral: Impressões Digitais dos Elementos</h2>
+            <p>Este é um atlas de referência que mostra as 'impressões digitais' (linhas de absorção) dos principais elementos encontrados em estrelas.</p>
+            
+            <div id="atlas-container" style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 30px;">
+                <p style="text-align: center; color: #888;">Carregando Atlas...</p>
+            </div>
+
+            <hr>
+
+            <h3>Atividade de Anotação</h3>
+            <p>Agora que você observou os espectros, anote na tabela abaixo os comprimentos de onda (em nm) que você identificou. <strong>Preencha cada coluna 'Linha' com um único valor.</strong></p>
+            <p>Use a última coluna para adicionar <strong>comentários e observações</strong> sobre as características das linhas (ex: largas, finas, muito próximas, etc.).</p>
+
+            <div class="table-container">
+                <table id="tabela-atlas">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">Elemento</th>
+                            <th>Linha 1</th>
+                            <th>Linha 2</th>
+                            <th>Linha 3</th>
+                            <th>Linha 4</th>
+                            <th>Linha 5</th>
+                            <th style="width: 30%;">Observações / Comentários</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <button class="btn-primary" onclick="baixarCSVAtlas()">📥 Baixar Anotações do Atlas (CSV)</button>
+            </div>
+        </div>
+
+        <div id="etapa3" class="tab-content">
+            <h2>Modelo Simples de Espectro de Absorção</h2>
+
+            <details style="background: #262730; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <summary>
+                    <span>📚</span> Clique aqui para entender por que os espectros das estrelas têm "vales" (Leis de Kirchhoff)
+                </summary>
+                <div style="margin-top: 15px; color: #ddd; line-height: 1.6;">
+                    
+                    <p>Na Etapa 1, vimos o espectro <strong>ideal</strong> de uma estrela, a curva suave da radiação de corpo negro. No entanto, quando olhamos para uma estrela real, o espectro que vemos não é assim tão perfeito. Ele é cheio de "vales" ou linhas escuras, como você pode ver no simulador abaixo. Mas o que são esses vales?</p>
+
+                    <h3>Por que o Espectro de uma Estrela não é Ideal?</h3>
+                    <p>Imagine que o núcleo denso de uma estrela produz uma luz intensa e contínua, como uma lâmpada incandescente. Esse seria o espectro de corpo negro perfeito, um arco-íris completo e sem falhas.</p>
+                    <p>Porém, essa luz precisa atravessar a atmosfera mais externa e mais fria da estrela para chegar até nós. Nessa atmosfera, existem átomos de vários elementos químicos (hidrogênio, hélio, cálcio, etc.). Cada tipo de átomo é "sintonizado" para absorver comprimentos de onda (cores) muito específicos de luz.</p>
+                    <p>Quando a luz contínua do núcleo passa pela atmosfera, os átomos "roubam" exatamente a energia que eles gostam de absorver. O resultado é que, no espectro que chega à Terra, faltam essas cores específicas. Esses "vales" são as <strong>linhas de absorção</strong>. Eles são as impressões digitais dos elementos presentes na atmosfera da estrela.</p>
+
+                    <h3>As Leis de Kirchhoff e os 3 Tipos de Espectros</h3>
+                    <p>No século XIX, o físico Gustav Kirchhoff formulou três leis que descrevem perfeitamente como esses espectros são formados:</p>
+                    
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; align-items: flex-start;">
+                        <div style="flex: 1; min-width: 300px;">
+                            <img src="assets/lei_espectro.jpg" alt="Leis de Kirchhoff" style="width: 100%; border-radius: 5px; border: 1px solid #444;">
+                            <p style="font-size: 0.8em; color: #888; margin-top: 5px;">Fonte: Adaptado de Wikimedia Commons</p>
+                        </div>
+                        <div style="flex: 1; min-width: 300px;">
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="margin-bottom: 15px;">
+                                    <strong>1. Espectro Contínuo:</strong><br>
+                                    <em>O que é:</em> Um espectro completo e ininterrupto.<br>
+                                    <em>Como se forma:</em> É produzido por um objeto denso e quente, como o núcleo de uma estrela ou o filamento de uma lâmpada incandescente. A luz é emitida em todos os comprimentos de onda. (Lei 1 de Kirchhoff)
+                                </li>
+                                <li style="margin-bottom: 15px;">
+                                    <strong>2. Espectro de Emissão:</strong><br>
+                                    <em>O que é:</em> Apenas algumas linhas coloridas brilhantes sobre um fundo preto.<br>
+                                    <em>Como se forma:</em> É produzido por um gás quente de baixa densidade. O gás não emite um espectro contínuo, mas apenas energias (correspondente a comprimento de onda) específicas que seus átomos são capazes de emitir. É o oposto do espectro de absorção. (Lei 2 de Kirchhoff)
+                                </li>
+                                <li style="margin-bottom: 15px;">
+                                    <strong>3. Espectro de Absorção:</strong><br>
+                                    <em>O que é:</em> Um espectro contínuo com linhas escuras (vales).<br>
+                                    <em>Como se forma:</em> É produzido quando a luz de uma fonte quente e contínua passa por um gás mais frio e de baixa densidade (como a atmosfera de uma estrela). O gás frio absorve as mesmas energias que emitiria se estivesse quente. (Lei 3 de Kirchhoff)
+                                </li>
+                            </ul>
+                            <p>Volte para Etapa 2 e observe o espectro de absorção de alguns elementos químicos.</p>
+                        </div>
+                    </div>
+
+                    <p style="background: #1e3d2f; padding: 15px; border-radius: 5px; border-left: 5px solid #2ea043; margin-top: 20px;">
+                        <strong>Conclusão:</strong> O espectro de uma estrela é um <strong>espectro de absorção</strong> porque estamos vendo a luz contínua do seu núcleo denso depois que ela foi 'filtrada' pela sua atmosfera mais fria.
+                    </p>
+                </div>
+            </details>
+                        <details style="background: #262730; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <summary>
+                    <span>💡</span> O que significa 'Gravidade (log g)'?
+                </summary>
+                <div style="margin-top: 15px; color: #ddd; line-height: 1.6;">
+                    <p>O termo <strong>log(g)</strong> refere-se à <strong>gravidade na superfície</strong> da estrela, que está diretamente relacionada à pressão em sua atmosfera.</p>
+                    <ul>
+                        <li><strong>'g'</strong> é a aceleração da gravidade na superfície. Ela depende tanto da <strong>massa</strong> da estrela quanto do seu <strong>raio</strong>.</li>
+                        <li><strong>'log'</strong> é a escala logarítmica, usada para facilitar o trabalho com a vasta gama de valores de gravidade encontrados no universo.</li>
+                    </ul>
+                    <p>A relação chave é: estrelas com <strong>raio pequeno e alta densidade</strong> (como anãs) têm <strong>alta gravidade superficial (log g alto)</strong>. Estrelas com <strong>raio muito grande</strong> (como as gigantes e supergigantes), mesmo que sejam muito massivas, têm uma atmosfera expandida e, portanto, <strong>baixa gravidade superficial (log g baixo)</strong>.</p>
+                    <p style="background: #1e3d2f; padding: 10px; border-radius: 5px; border-left: 4px solid #2ea043;">
+                        <strong>Efeito no Espectro:</strong> Uma gravidade maior (log g alto) comprime a atmosfera estelar, causando mais colisões entre os átomos. Essa "pressão" alarga as linhas de absorção. Portanto, estrelas gigantes (log g baixo) têm linhas espectrais finas e nítidas, enquanto estrelas anãs (log g alto) têm linhas mais largas.
+                    </p>
+                </div>
+            </details>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Temperatura (K): <span id="val-temp-e3">5800</span></label>
+                    <input type="range" id="temp_e3_slider" min="2800" max="40000" value="5800" step="200">
+                </div>
+                <div class="control-group">
+                    <label>Gravidade (log g): <span id="val-logg-e3">4.5</span></label>
+                    <input type="range" id="logg_e3_slider" min="1.0" max="5.0" value="4.5" step="0.1">
+                </div>
+            </div>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Escala Min (nm): <span id="val-xmin-e3">380</span></label>
+                    <input type="range" id="xmin_e3_slider" min="50" max="1000" value="380" step="10">
+                </div>
+                <div class="control-group">
+                    <label>Escala Max (nm): <span id="val-xmax-e3">750</span></label>
+                    <input type="range" id="xmax_e3_slider" min="400" max="2000" value="750" step="10">
+                </div>
+            </div>
+
+            <div class="chart-container" style="position: relative; height: 450px; width: 100%;">
+                <div class="chart-overlay-info">
+                    <span>Classe Espectral:</span>
+                    <span id="calc-classe-e3" class="badge-classe" style="font-size: 1.1em;">G</span>
+                </div>
+                <canvas id="graficoEtapa3"></canvas>
+            </div>
+            <div style="margin-top: 10px; background: #000; padding: 10px; border: 1px solid #333; border-radius: 4px;">
+                    
+                    <canvas id="faixaEspectralE3" style="width: 100%; height: 100px; display: block;"></canvas>
+                    
+                    <p style="margin: 8px 0 0 0; font-size: 0.9em; color: #aaa; text-align: center;">
+                        Placa Fotográfica de Absorção. As linhas escuras correspondem aos vales no gráfico acima (linhas de absorção de energia do átomo)
+                    </p>
+            </div>
+
+        </div>
+
+        <div id="etapa4" class="tab-content">
+            <h2>Atividade de identificação de átomos e composto em espectro de absorção</h2>
+
+            <p>Use os controles abaixo para gerar espectros de estrelas com diferentes temperaturas. O gráfico de cima mostra a curva de corpo negro e o de baixo mostra as linhas de absorção que apareceriam.</p>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Temperatura (K): <span id="val-temp-e4">5800</span></label>
+                    <input type="range" id="temp_e4_slider" min="2800" max="40000" value="5800" step="200">
+                </div>
+                <div class="control-group">
+                    <label>Gravidade (log g): <span id="val-logg-e4">2.0</span></label>
+                    <input type="range" id="logg_e4_slider" min="1.0" max="5.0" value="2.0" step="0.1">
+                </div>
+            </div>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Escala Min (nm): <span id="val-xmin-e4">380</span></label>
+                    <input type="range" id="xmin_e4_slider" min="50" max="1000" value="380" step="10">
+                </div>
+                <div class="control-group">
+                    <label>Escala Max (nm): <span id="val-xmax-e4">750</span></label>
+                    <input type="range" id="xmax_e4_slider" min="400" max="2000" value="750" step="10">
+                </div>
+            </div>
+
+            <div style="background: #000; padding: 10px; border-radius: 8px;">
+                <div class="chart-container" style="position: relative; height: 300px; width: 100%; margin-bottom: 5px;">
+                    <div class="chart-overlay-info">
+                        <span style="color: #aaa;">T<sub>eff</sub>:</span>
+                        <span id="hud-temp-e4" class="badge-classe" style="color: #ffffff;">5777 K</span>
+                        
+                        <span style="width: 15px;"></span>
+
+                        <span style="color: #aaa;">log(g):</span>
+                        <span id="hud-logg-e4" class="badge-classe" style="color: #ffffff;">4.44</span>
+
+                        <span style="width: 15px;"></span> <span style="color: #aaa;">Classe:</span>
+                        <span id="hud-classe-e4" class="badge-classe" style="font-weight: bold;">G</span>
+                    </div>
+                    <canvas id="graficoEtapa4_Top"></canvas>
+                </div>
+                <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="graficoEtapa4_Bottom"></canvas>
+                </div>
+            </div>
+            
+            <hr>
+
+            <h3>Missão: Decifrando o espectro na faixa do visível</h3>
+            <div style="background: #1e2a3a; border-left: 5px solid #3b82f6; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+                <strong>Seu objetivo:</strong> Agir como um(a) astrofísico(a) e identificar quais elementos químicos deixam suas "impressões digitais" em estrelas de diferentes temperaturas.<br><br>
+                <strong>Instruções:</strong>
+                <ol style="margin-left: 20px;">
+                    <li>Use os sliders acima para escolher uma temperatura (ou use as temperaturas que você investigou na Etapa 1 para cada classe espectral).</li>
+                    <li>Observe atentamente o gráfico normalizado <strong>"2. Linhas de Absorção"</strong>.</li>
+                    <li>Consulte o <strong>"Etapa 2: Atlas Espectral"</strong> (e seus dados) para comparar as posições dos "vales" (linhas de absorção) com as linhas de referência de cada elemento.</li>
+                    <li>Preencha a tabela abaixo com suas descobertas. Adicione uma nova linha para cada classe espectral que você analisar.</li>
+                </ol>
+            </div>
+
+            <div class="table-container">
+                <table id="tabela-investigacao">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Classe / Temp (K)</th>
+                            <th>Elementos Identificados</th>
+                            <th>Intensidade (ordem decrescente)</th>
+                            <th>Observações / Comentários</th>
+                            <th style="width: 50px;">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+                <button class="btn-primary" onclick="adicionarLinhaInvestigacao()">+ Adicionar Nova Análise</button>
+                <p style="font-size: 0.9em; color: #888;">Análises feitas: <span id="contador-inv">0</span>/6</p>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h4>Perguntas para Análise</h4>
+                
+                <label>1. Quais elementos (ou moléculas, como o TiO) têm suas linhas de absorção mais fortes em estrelas de <strong>baixa temperatura</strong> (ex: ~3.000 K - 4.000 K)?</label>
+                <textarea id="resp1-e4" rows="2" style="width: 100%; margin-bottom: 15px;"></textarea>
+
+                <label>2. Olhando para todas as suas observações na tabela, qual elemento parece estar presente e visível na <strong>maioria das classes espectrais</strong> que você analisou?</label>
+                <textarea id="resp2-e4" rows="2" style="width: 100%; margin-bottom: 15px;"></textarea>
+
+                <label>3. Mantenha a temperatura fixa (ex: 6000 K) e mova o slider 'Gravidade (log g)'. O que acontece com a <strong>largura</strong> das linhas de absorção quando você aumenta ou diminui o valor de log(g)? Descreva por que a largura das linhas espectrais varia e quais são as diferenças entre as características de estrelas com alto e baixo log(g).</label>
+                <textarea id="resp3-e4" rows="2" style="width: 100%; margin-bottom: 15px;"></textarea>
+            </div>
+
+            <div id="secao-payne" style="display: none; margin-top: 40px; border-top: 2px solid #555; padding-top: 20px;">
+                <h3 style="color: #d63384;">A revolução de uma cientista: Descoberta, Gênero e Poder</h3>
+                
+                <div style="background: #222; padding: 20px; border-radius: 10px; line-height: 1.6;">
+                    <h4>A Crença Antiga: Um universo com a nossa Cara</h4>
+                    <p>Até a década de 1920, a visão predominante, defendida por influentes da área como o astrofísico Henry Norris Russell, era de que as estrelas e a Terra tinham composições químicas semelhantes. A lógica era simples e baseada em observação direta e qualitativa: como as linhas espectrais de metais como Ferro (Fe) e Cálcio (Ca) eram as mais fortes no espectro do Sol, esses deveriam ser os elementos mais abundantes. Acreditava-se que a intensidade de uma linha era um indicativo direto da quantidade do elemento.</p>
+
+                    <h4>A Tese que mudou tudo</h4>
+                    <p>Em sua tese de doutorado em 1925, <strong>Cecilia Payne</strong> fez algo radical. Usando a recém-desenvolvida teoria quântica, ela construiu um método quantitativo para explicar as linhas espectrais. Sua análise matemática rigorosa a levou a uma conclusão que contrariava todo o conhecimento vigente:</p>
+                    <ul>
+                        <li>Hidrogênio e Hélio não eram apenas presentes, mas sim os componentes esmagadoramente dominantes do universo. Em suas contas, o hidrogênio era mais de um milhão de vezes mais abundante que o ferro na atmosfera solar.</li>
+                        <li>A intensidade de uma linha espectral <strong>não mede a abundância</strong>, mas sim as <strong>condições físicas</strong> (principalmente a temperatura) da atmosfera da estrela, que determinam se um átomo está no estado correto de excitação para absorver energia.</li>
+                    </ul>
+
+                    <p><strong>Por que as linhas "mentem"?</strong> Para um átomo absorver luz, seu elétron precisa estar em um nível de energia específico para poder "saltar" para um nível mais alto. A temperatura da estrela determina se os elétrons estão nesse estado ideal:</p>
+                    <ul>
+                        <li><strong>Em estrelas muito frias:</strong> Os átomos não têm energia suficiente para excitar seus elétrons para o nível correto. As linhas de absorção visíveis são fracas ou inexistentes.</li>
+                        <li><strong>Em estrelas muito quentes:</strong> A energia é tão alta que a maioria dos elétrons já foi arrancada dos átomos (ionização). Sobram poucos átomos no estado certo para absorver a radiação.</li>
+                    </ul>
+
+                    <h4>A inércia do conhecimento: O Confronto com o patriarcado e a autoridade</h4>
+                    <p>A descoberta de Payne foi tão revolucionária que foi recebida com enorme ceticismo. O próprio Russell, que era consultor de sua tese, a aconselhou a <strong>não</strong> publicar sua principal conclusão, escrevendo que era "claramente impossível" que o hidrogênio fosse tão abundante.</p>
+                    <p>Payne enfrentava um sistema onde a autoridade científica era exclusivamente masculina. Desde seus tempos de estudante em Cambridge, ouviu de um diretor que "jamais seria uma astrônoma" e, em Harvard, mesmo realizando trabalho complexo, este era classificado como de "caráter feminino", com remuneração inferior. Pressionada por uma das figuras mais poderosas da astronomia mundial, ela cedeu e adicionou uma ressalva em sua tese, afirmando que sua descoberta sobre a abundância de hidrogênio e hélio era "quase certamente não real".</p>
+                    <p>Quatro anos depois, usando uma metodologia diferente, o próprio Henry Norris Russell chegou à mesma conclusão que Payne. Seu artigo se tornou a referência na área, e por muito tempo ele foi creditado como o pioneiro da descoberta. Embora ele tenha citado o trabalho dela, não mencionou que ela havia chegado à resposta correta anos antes e fora dissuadida por ele.</p>
+                    <p>Payne, em 1925, se tornou a <strong>primeira pessoa</strong> a conseguir o título de doutora em astronomia na Universidade de Harvard. Cecilia Payne continuou sua carreira em Harvard por mais de trinta anos, mas só foi oficialmente nomeada professora em 1956, tornando-se a primeira mulher a chefiar um departamento na universidade. Sua história é um lembrete poderoso de que a ciência não é uma busca puramente objetiva; ela é uma construção humana, influenciada por preconceitos, relações de poder e pela coragem daqueles que ousam desafiar a opressão.</p>
+                </div>
+                
+                <div style="margin-top: 15px; font-size: 0.9em; background: #333; padding: 10px; border-radius: 5px;">
+                    <strong>Material de Apoio (para alunos e professores):</strong><br>
+                    A história de como Cecilia Payne revolucionou nosso entendimento da composição do universo é fascinante e um marco na ciência. Para saber mais sobre seu trabalho e a física por trás da análise espectral, leia o artigo: 
+                    <a href="https://doi.org/10.1590/1806-9126-RBEF-2021-0028" target="_blank" style="color: #4ea8de;">O papel de Cecilia Payne na determinação da composição estelar</a>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4>Reflexão final</h4>
+                    <p>A trajetória de Cecilia Payne-Gaposchkin é um exemplo poderoso de como a ciência é uma construção humana, sujeita a preconceitos, mas também impulsionada pela coragem de pessoas marginalizadas e silenciadas.</p>
+                    <p>Com base no que você leu, escreva uma reflexão sobre como os desafios de gênero e a pressão de cientistas estabelecidos impactaram não apenas a carreira de Cecilia, mas também o próprio avanço do conhecimento científico.</p>
+                    <p>Reuna-se com os seus colegas e discuta os termos "caráter feminino" e "jamais seria uma astrônoma" no contexto do texto. O que esse tipo de atitude impacta na sociedade? Quais vozes/sujeitos estão em posição de poder, e em relação a quem?</p>
+                    <textarea id="reflexao-payne" rows="5" style="width: 100%; padding: 10px; font-family: sans-serif;"></textarea>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <button class="btn-primary" onclick="baixarRelatorioE4()">📥 Baixar relatório completo da etapa 4 (CSV)</button>
+            </div>
+        </div>
+
+        <div id="etapa5" class="tab-content">
+            <h2>Linha de referencia de espectro no visível</h2>
+            <p>Marque os elementos abaixo para projetar suas linhas de referência sobre o espectro. Isso ajuda a identificar quais elementos estão causando os "vales" de absorção.</p>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Temperatura (K): <span id="val-temp-e5">5800</span></label>
+                    <input type="range" id="temp_e5_slider" min="2800" max="40000" value="5800" step="200">
+                </div>
+                <div class="control-group">
+                    <label>Gravidade (log g): <span id="val-logg-e5">2.0</span></label>
+                    <input type="range" id="logg_e5_slider" min="1.0" max="5.0" value="2.0" step="0.1">
+                </div>
+            </div>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Escala Min (nm): <span id="val-xmin-e5">380</span></label>
+                    <input type="range" id="xmin_e5_slider" min="50" max="1000" value="380" step="10">
+                </div>
+                <div class="control-group">
+                    <label>Escala Max (nm): <span id="val-xmax-e5">750</span></label>
+                    <input type="range" id="xmax_e5_slider" min="400" max="2000" value="750" step="10">
+                </div>
+            </div>
+
+            <div style="background: #1e1e1e; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: #ddd;">Marque os elementos para revelar suas posições:</h4>
+                <div id="checkboxes-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;">
+                    </div>
+            </div>
+
+            <div style="background: #000; padding: 10px; border-radius: 8px;">
+                <div class="chart-container" style="position: relative; height: 300px; width: 100%; margin-bottom: 5px;">
+                    <canvas id="graficoEtapa5_Top"></canvas>
+                </div>
+                <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="graficoEtapa5_Bottom"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="etapa6" class="tab-content">
+            <h2>Etapa 6: Análise de Espectros Reais</h2>
+            
+            <div style="background: #1e1e1e; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p>Bem-vindo(a) à fronteira da astrofísica moderna! Até agora, você trabalhou com um simulador idealizado, um ambiente controlado para aprender os conceitos fundamentais. Agora, vamos encarar o desafio que os astrofísicos(as) enfrentam todos os dias: analisar dados reais.</p>
+                <p>Grandes levantamentos de dados, como o <strong>Sloan Digital Sky Survey (SDSS)</strong> e bancos de dados especializados como o <strong>Montreal White Dwarf Database (MWDD)</strong>, coletaram milhões de espectros de estrelas, galáxias e quasares. Este trabalho monumental nos permite entender a evolução do universo, a composição de estrelas distantes e até mesmo os restos de planetas que orbitaram estrelas mortas.</p>
+                <p>Ao olhar para os gráficos abaixo, você notará que eles parecem bem mais "desconfortáveis" e caóticos do que os do nosso simulador. Isso porque dados reais contêm <strong>ruído</strong>: flutuações aleatórias causadas pelo detector do telescópio, pela atmosfera da Terra ou por fontes de luz de fundo. Um pequeno "vale" pode ser uma linha de absorção real de um elemento químico ou apenas uma flutuação aleatória do ruído.</p>
+                <p>É aqui que entra a experiência do astrofísico: com estudo e técnicas de processamento de dados, ele aprende a diferenciar o sinal do ruído para, com confiança, identificar os elementos que compõem uma estrela.</p>
+                
+                <details style="background: #2b2b2b; padding: 10px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                    <summary>
+                        <span>ℹ️</span> Clique aqui para entender a unidade Angstrom (Å)
+                    </summary>
+                    <div style="margin-top: 10px; color: #ccc; font-size: 0.9em;">
+                        <p>Nos gráficos profissionais, é comum usar <strong>Angstroms (Å)</strong> em vez de nanômetros (nm).</p>
+                        <div style="background: #000; padding: 10px; border-radius: 5px; text-align: center; font-size: 1.2em; margin: 15px 0; font-family: 'Courier New', monospace;">
+                            1 nm = 10 Å
+                        </div>
+                        <p><strong>Regra prática:</strong> Para converter de Angstrom para nanômetro, basta <strong>dividir por 10</strong>. Ex: 4000 Å = 400 nm.</p>
+                    </div>
+                </details>
+            </div>
+
+            <hr>
+
+            <div class="sub-tabs" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="sub-tab-btn active" onclick="openSubTab('spec1', this)">1. Sistema Binário</button>
+                <button type="button" class="sub-tab-btn" onclick="openSubTab('spec2', this)">2. Estrela Tipo Solar</button>
+                <button type="button" class="sub-tab-btn" onclick="openSubTab('spec3', this)">3. Supergigante</button>
+            </div>
+
+            <div id="spec1" class="sub-tab-content" style="display: block;">
+                <h3>Espectro de um Sistema Binário (2MASS J00035692-0503328)</h3>
+                
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+                    
+                    <div style="flex: 1; min-width: 300px;">
+                        
+                        <div class="img-container-zoom">
+                            <img src="assets/binary_spec.png" 
+                                style="width: 100%; border-radius: 5px; border: 1px solid #444; display: block;" 
+                                alt="Espectro real"
+                                class="zoomable-img"
+                                onclick="abrirZoom(this)">
+                            
+                            <div class="zoom-icon-overlay">🔍</div>
+                        </div>
+
+                        <p style="font-size: 0.9em; color: #ccc; text-align: center; margin-top: 8px;">
+                            Espectro real de uma binária.
+                        </p>
+                    </div>
+
+                    <div style="flex: 1; min-width: 300px;">
+                        <div class="img-container-zoom">
+                            <img src="assets/binary_lines.png" 
+                                style="width: 100%; border-radius: 5px; border: 1px solid #444; display: block;" 
+                                alt="Espectro real"
+                                class="zoomable-img"
+                                onclick="abrirZoom(this)">
+                            
+                            <div class="zoom-icon-overlay">🔍</div>
+                        </div>
+                        <p style="font-size: 0.8em; color: #888; text-align: center;">
+                            🔍 Clique na imagem para ampliar<br>Mesmo espectro, com as linhas identificadas.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div style="background: #222; padding: 15px; border-radius: 5px; border-left: 4px solid #d63384; margin-bottom: 15px;">
+                    <h4>Análise Profissional: A História de Duas Estrelas</h4>
+                    <p>Este espectro fascinante do sistema <strong>2MASS J00035692-0503328</strong> conta a história não de uma, mas de duas estrelas. A luz que vemos é a soma da contribuição de uma Anã Branca quente (Tipo DA) e uma Anã Vermelha fria (Tipo M). Vamos primeiro focar na estrela principal.</p>
+                    <hr style="border-color: #444;">
+                    
+                    <h4>A Estrela Principal: A Anã Branca</h4>
+                    <p>A luz na parte azul do espectro é dominada pela <strong>Anã Branca</strong>, o núcleo denso que resta após uma estrela como o Sol morrer. Suas propriedades são extremas:</p>
+                    <ul>
+                        <li><strong>Temperatura Efetiva:</strong> <strong>~17.000 K</strong> (extremamente quente, quase três vezes a temperatura da superfície do Sol, que é ~5.800 K).</li>
+                        <li><strong>Massa:</strong> <strong>~0,66 M☉</strong> (cerca de 66% da massa do nosso Sol).</li>
+                        <li><strong>Gravidade Superficial (log g):</strong> <strong>8,07</strong> (o Sol tem um log(g) de ~4,44). Esse valor, dezenas de milhares de vezes maior que o do Sol, indica que a estrela é incrivelmente densa: <strong>imagine 66% da massa do Sol espremida em um objeto do tamanho da Terra!</strong></li>
+                    </ul>
+
+                    <p><strong>Desafio Interativo:</strong> Com uma temperatura de 17.100 K, que cor você esperaria que essa estrela isolada tivesse? Volte para o simulador da <strong>Etapa 1</strong>, ajuste os parâmetros para essa temperatura e confirme se a cor branco-azulada faz sentido para uma estrela tão quente.</p>
+
+                    <hr style="border-color: #444;">
+
+                    <h4>A Pista da Companheira escondida no Espectro</h4>
+                    <p>As linhas de absorção de Hidrogênio que vemos (Hα, Hβ, etc.) pertencem à Anã Branca. Note como elas são <strong>extremamente largas</strong> – isso é um efeito direto da imensa pressão em sua atmosfera (o alto <code>log(g)</code>).</p>
+                    <p>É aqui que o mistério é resolvido: a luz da Anã Branca deveria diminuir cada vez mais na parte vermelha do espectro. Em vez disso, o fluxo <strong>começa a subir</strong> após 7000 Å. Essa luz "extra" é a assinatura da <strong>Anã Vermelha</strong>, a companheira mais fria, cuja luz só se torna dominante nesta região. A "contradição" no gráfico é a prova de que há duas estrelas ali!</p>
+                </div>
+
+                <label style="display:block; margin-bottom:5px;">Com base na explicação, descreva com suas palavras por que o fluxo deste espectro começa a subir após 7000 Å. O que a presença da Anã Vermelha nos diz sobre como os espectros que observamos são, na verdade, uma soma de todas as fontes de luz capturadas pelo telescópio?</label>
+                <textarea id="analise-spec1" rows="4" style="width: 100%; background: #333; color: white; border: 1px solid #555; padding: 10px;"></textarea>
+                
+                <p style="font-size: 0.8em; color: #888; margin-top: 5px;">Fonte dos Dados: Os parâmetros da estrela (temperatura, massa, etc.) foram consultados no <a href="https://www.montrealwhitedwarfdatabase.org/" target="_blank" style="color:#4ea8de;">Montreal White Dwarf Database (MWDD)</a>.</p>
+            </div>
+
+            <div id="spec2" class="sub-tab-content" style="display: none;">
+                <h3>Espectro de uma Estrela Análoga Solar</h3>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <div style="width: 80%; max-width: 800px;">
+                        
+                        <div class="img-container-zoom">
+                            <img src="assets/sun_spec.png" 
+                                class="zoomable-img" 
+                                onclick="abrirZoom(this)" 
+                                style="width: 100%; border-radius: 5px; border: 1px solid #444; display: block;" 
+                                alt="Espectro do Tipo G">
+                                
+                            <div class="zoom-icon-overlay">🔍</div>
+                        </div>
+                            
+                        <p style="font-size: 0.9em; color: #ccc; text-align: center; margin-top: 8px;">
+                            Espectro de uma estrela do tipo G, semelhante ao nosso Sol.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="background: #222; padding: 15px; border-radius: 5px; border-left: 4px solid #d63384; margin-bottom: 15px;">
+                    <h4>Análise Profissional: Encontrando uma gêmea do Sol</h4>
+                    <p>Este espectro pertence a uma estrela do tipo G, a mesma classe do nosso Sol. À primeira vista, ela parece muito familiar: uma curva suave repleta de linhas de absorção finas, indicando a presença de vários elementos em sua atmosfera.</p>
+                    <p>Diferente dos espectros normalizados do simulador, este gráfico mostra o fluxo de energia real (<strong>F<sub>&lambda;</sub></strong>) que recebemos da estrela em unidades físicas. Como ajuda, algumas das linhas de absorção mais importantes já foram identificadas para nós, incluindo as do <strong>Cálcio (CaII)</strong>, <strong>Hidrogênio (Hβ, Hα)</strong> e <strong>Sódio (Na)</strong>.</p>
+                    
+                    <h4>Um desafio de comparação</h4>
+                    <p>Nosso Sol tem uma temperatura de superfície de aproximadamente <strong>5777 K</strong> (usaremos esse valor padrão, que é muito próximo do que você usou), e o pico de sua emissão de luz (<strong>&lambda;<sub>max</sub></strong>) ocorre em torno de <strong>5020 Å (ou 502 nm)</strong>, na faixa visível (branco).</p>
+                    <p>Agora, observe atentamente o gráfico desta estrela. <strong>Onde você diria que está o pico de emissão dela?</strong> O ponto mais alto da curva parece estar em um comprimento de onda <strong>mais curto</strong> ou <strong>mais longo</strong> que os 5020 Å do Sol?</p>
+                    <p><strong>Lembre-se da Lei de Wien da Etapa 1:</strong> estrelas mais quentes têm seu pico de emissão em comprimentos de onda mais curtos (deslocados para o azul). Com base nisso, esta estrela parece ser um pouco mais quente ou um pouco mais fria que o Sol? Sinta-se à vontade para voltar ao simulador e confirmar a relação entre temperatura e pico de emissão!</p>
+
+                    <h4>Explore um Atlas Solar</h4>
+                    <p>Para uma comparação detalhada, astrofísicos usam "atlas" espectrais de altíssima resolução do Sol. Se tiver curiosidade, você pode explorar um espectro solar interativo e tentar encontrar as mesmas linhas de absorção no site do: <a href="https://bass2000.obspm.fr/solar_spect.php" target="_blank" style="color:#4ea8de;">BASS2000 Solar Survey</a>.</p>
+                </div>
+
+                <label style="display:block; margin-bottom:5px;">Com base na sua análise visual do pico de emissão, você acha que esta estrela é mais quente ou mais fria que o Sol? Justifique sua resposta usando o que aprendeu na Etapa 1. Além disso, é possível identificar outras linhas de absorção ao analisar esse espectro?</label>
+                <textarea id="analise-spec2" rows="4" style="width: 100%; background: #333; color: white; border: 1px solid #555; padding: 10px;"></textarea>
+                
+                <p style="font-size: 0.8em; color: #888; margin-top: 5px;">Fonte dos Dados: Espectro obtido através dos dados públicos do Sloan Digital Sky Survey (SDSS).</p>
+            </div>
+
+            <div id="spec3" class="sub-tab-content" style="display: none;">
+                <h3>Espectro de uma Estrela Supergigante</h3>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <div style="width: 80%; max-width: 800px;">
+                        
+                        <div class="img-container-zoom">
+                            <img src="assets/giant_spec.png" 
+                                class="zoomable-img" 
+                                onclick="abrirZoom(this)" 
+                                style="width: 100%; border-radius: 5px; border: 1px solid #444; display: block;" 
+                                alt="Estrela Supergigante">
+                                
+                            <div class="zoom-icon-overlay">🔍</div>
+                        </div>
+                            
+                        <p style="font-size: 0.9em; color: #ccc; text-align: center; margin-top: 8px;">
+                            Espectro de uma estrela supergigante do tipo G/K, candidata selecionada do SDSS.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="background: #222; padding: 15px; border-radius: 5px; border-left: 4px solid #d63384; margin-bottom: 15px;">
+                    <h4>Análise Profissional: O Gigante gentil do cosmos</h4>
+                    <h4>Parâmetros Físicos da Estrela</h4>
+                    <p>Os dados do SDSS nos contam a história desta estrela em números. Vamos analisá-los:</p>
+                    <ul>
+                        <li><strong>Temperatura Efetiva:</strong> <strong>~4.500 K</strong>. Isso confirma que estamos olhando para uma estrela relativamente "fria" (mais fria que o Sol), o que a classifica como uma <strong>Supergigante Vermelha</strong>. Essa temperatura é perfeitamente consistente com o pico de emissão que vemos na região laranja-vermelha do espectro.</li>
+                        <li><strong>Gravidade Superficial (log g):</strong> <strong>~0.9</strong>. Este é um valor extremamente baixo e é a prova numérica do que vimos no espectro. Ele confirma que a atmosfera da estrela é incrivelmente rarefeita e expandida, a característica definitiva de uma supergigante.</li>
+                    </ul>
+                    <p>Este é o espectro de uma estrela que selecionamos usando nosso filtro de baixa gravidade superficial (<code>log(g) < 2</code>). E o resultado visual é uma confirmação espetacular: estamos olhando para uma <strong>Supergigante Amarela-Laranja</strong>.</p>
+
+                    <h4>A Assinatura de Baixa Gravidade</h4>
+                    <p>A característica mais importante e reveladora aqui são as <strong>linhas de absorção</strong>. Observe como as linhas do Hidrogênio (Hβ, Hα), Sódio (Na) e o proeminente trio de linhas do Cálcio (CaII), perto de 8665 Å, são <strong>extremamente finas e bem definidas</strong>.</p>
+                    
+                    <p><strong>Compare agora:</strong></p>
+                    <ul>
+                        <li><strong>Anã Branca (Aba 1):</strong> Linhas imensamente largas devido à pressão atmosférica esmagadora (alto <code>log(g)</code>).</li>
+                        <li><strong>Supergigante (Aqui):</strong> Linhas muito estreitas devido a uma atmosfera rarefeita e "fofa" (baixo <code>log(g)</code>).</li>
+                    </ul>
+                    <p>Essa "magreza" das linhas é a assinatura visual inconfundível de uma estrela de baixíssima densidade.</p>
+
+                    <h4>Temperatura e Evolução</h4>
+                    <p>Analisando a forma geral do gráfico, vemos que o pico de emissão de luz (<strong>&lambda;<sub>max</sub></strong>) desta estrela está em torno de <strong>~6500 Å</strong>, na região amarela-laranja. Isso indica uma temperatura de superfície mais fria que a do Sol (provavelmente abaixo de 5.000 K).</p>
+                    <p>Apesar de ser mais "fria" que o Sol, não se engane. O tamanho colossal desta estrela faz com que ela seja dezenas de milhares de vezes <strong>mais luminosa</strong> no total. Ela está em um estágio avançado de sua vida, já tendo consumido o hidrogênio de seu núcleo e agora "queimando" elementos mais pesados.</p>
+                </div>
+
+                <label style="display:block; margin-bottom:5px;">Qual é a principal diferença que você nota nas linhas de absorção desta estrela em comparação com a Anã Branca (Aba 1)? O que essa característica nos diz sobre a gravidade e a densidade da atmosfera da supergigante? (Dica: lembre-se do slider `log(g)` da Etapa 4).</label>
+                <textarea id="analise-spec3" rows="4" style="width: 100%; background: #333; color: white; border: 1px solid #555; padding: 10px;"></textarea>
+                
+                <p style="font-size: 0.8em; color: #888; margin-top: 5px;">Fonte dos Dados: Espectro de uma candidata a supergigante, selecionado a partir dos dados públicos do Sloan Digital Sky Survey (SDSS).</p>
+            </div>
+
+            <hr style="margin-top: 30px;">
+            
+            <button class="btn-primary" onclick="baixarRelatorioE6()">📥 Baixar Relatório de Análise Real (CSV)</button>
+        </div>
+
+        <div id="etapa7" class="tab-content">
+            <h2>🎓 Tutorial: Explorando o Universo com SDSS SQL Search</h2>
+            <p>Este tutorial ensina como usar a ferramenta "SQL Search" do Sloan Digital Sky Survey (SDSS) para encontrar tipos específicos de estrelas, como anãs brancas, gigantes, supergigantes e estrelas da sequência principal (como o Sol).</p>
+
+            <div style="background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3>Parte 1: Acessando a ferramenta de pesquisa SQL</h3>
+                <p>Primeiro, precisamos chegar à ferramenta correta no site.</p>
+                <ol>
+                    <li>Acesse a página inicial do SDSS SkyServer: <a href="https://skyserver.sdss.org/" target="_blank" style="color: #4ea8de;">https://skyserver.sdss.org/</a></li>
+                    <li>No menu superior, clique em <strong>Search Tools</strong>.</li>
+                    <li>No menu que aparece, clique em <strong>SQL Search</strong>.</li>
+                </ol>
+                <p>Você verá uma página com uma grande caixa de texto. É aqui que inserimos nossos comandos.</p>
+
+                <h3>Parte 2: Entendendo o comando SQL Base</h3>
+                <p>Todos os nossos comandos terão uma estrutura parecida. Vamos usar nosso comando de "gêmea solar" como o modelo base para entender cada parte:</p>
+                
+                <div style="background: #000; padding: 10px; border-radius: 5px; font-family: monospace; overflow-x: auto; border: 1px solid #444;">
+        <pre><code style="color: #a5d6ff;">SELECT TOP 10
+            s.specobjid, s.subclass, p.LOGGADOP, p.FEHADOP
+        FROM
+            specObj AS s
+        JOIN
+            SppParams AS p ON s.specobjid = p.SPECOBJID
+        WHERE
+            s.class = 'STAR'
+            AND s.subclass LIKE 'G2%'
+            AND p.LOGGADOP BETWEEN 4.0 AND 4.5
+            AND p.FEHADOP BETWEEN -0.2 AND 0.2</code></pre>
+                </div>
+
+                <ul style="margin-top: 10px;">
+                    <li><strong>SELECT TOP 10 ...</strong>: Diz ao banco de dados o que queremos ver. Estamos pedindo para mostrar o ID do espectro (<code>specobjid</code>), a subclasse (<code>subclass</code>), a gravidade (<code>LOGGADOP</code>) e a metalicidade (<code>FEHADOP</code>) dos 10 primeiros resultados que encontrar.</li>
+                    <li><strong>FROM specObj AS s JOIN SppParams AS p ...</strong>: Diz onde vamos procurar. Estamos combinando (<code>JOIN</code>) duas tabelas: <code>specObj</code> (que tem informações básicas do espectro) e <code>SppParams</code> (que tem os parâmetros físicos detalhados).</li>
+                    <li><strong>WHERE ...</strong>: Esta é a parte mais importante, onde definimos as regras do nosso filtro para encontrar exatamente o que queremos.</li>
+                </ul>
+
+                <h3>Parte 3: Como modificar o Filtro</h3>
+                <p>Para encontrar diferentes tipos de estrelas, você só precisa modificar as linhas dentro da cláusula <code>WHERE</code>. Os dois parâmetros mais poderosos para isso são <code>subclass</code> e <code>LOGGADOP</code>.</p>
+                
+                <div style="background: #2b3a42; border-left: 5px solid #4ea8de; padding: 15px; margin-bottom: 10px;">
+                    <h4>🌡️ 1. O Parâmetro subclass (O Tipo Espectral)</h4>
+                    <ul>
+                        <li><strong>O que significa?</strong> A classificação detalhada da estrela baseada na sua temperatura. A sequência é O-B-A-F-G-K-M (da mais quente para a mais fria).</li>
+                        <li><strong>Como modificar?</strong> Mude <code>s.subclass LIKE 'G2%'</code> para:
+                            <ul>
+                                <li><code>s.subclass LIKE 'A%'</code>: Estrelas brancas, como Vega.</li>
+                                <li><code>s.subclass LIKE 'M%'</code>: Anãs vermelhas.</li>
+                                <li><code>s.subclass LIKE 'DA%'</code>: Anãs brancas com atmosfera de hidrogênio.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><em>(O símbolo % é um curinga que significa "qualquer coisa". Então, G2% encontra G2, G2V, etc.)</em></p>
+                </div>
+
+                <div style="background: #2b3a42; border-left: 5px solid #4ea8de; padding: 15px; margin-bottom: 10px;">
+                    <h4>📏 2. O Parâmetro LOGGADOP (O Tamanho e Tipo da Estrela)</h4>
+                    <ul>
+                        <li><strong>O que significa?</strong> O logaritmo da gravidade na superfície, um número que nos diz se a estrela é uma anã, gigante ou supergigante.
+                            <ul>
+                                <li><strong>Valor ALTO (> 7.0):</strong> Gravidade altíssima. Objeto denso e compacto (Anãs Brancas).</li>
+                                <li><strong>Valor MÉDIO (~4.0 a 4.5):</strong> Gravidade "normal" (Sequência Principal, como o Sol).</li>
+                                <li><strong>Valor BAIXO (~1.0 a 3.5):</strong> Gravidade baixa. Estrela grande e "inchada" (Gigantes).</li>
+                                <li><strong>Valor MUITO BAIXO (< 2.0):</strong> Gravidade extremamente baixa. Estrela imensa (Supergigantes).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Como modificar?</strong> Mude <code>p.LOGGADOP BETWEEN 4.0 AND 4.5</code> para:
+                            <ul>
+                                <li><code>p.LOGGADOP > 7.0</code>: Para anãs brancas.</li>
+                                <li><code>p.LOGGADOP BETWEEN 1.0 AND 3.5</code>: Para gigantes.</li>
+                                <li><code>p.LOGGADOP BETWEEN -0.5 AND 2.0</code>: Para supergigantes.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <h3>Parte 4: Comandos prontos para usar</h3>
+                <details style="background: #333; padding: 10px; border-radius: 5px; cursor: pointer; border: 1px solid #444;">
+                    <summary style="color: #fff; font-weight: bold;">
+                        <span>💻</span> Clique para ver os comandos SQL prontos para copiar
+                    </summary>
+                    
+                    <p style="margin-top: 15px; color: #ccc;"><strong>1. Estrela de Sequência Principal (Tipo Solar)</strong></p>
+                    <textarea readonly style="width: 100%; height: 150px; background: #000; color: #0f0; border: 1px solid #555; padding: 10px; font-family: monospace; border-radius: 5px; text-align: left;">SELECT TOP 10 
+                    s.specobjid, 
+                    s.subclass, 
+                    p.LOGGADOP, 
+                    p.FEHADOP 
+                FROM specObj AS s 
+                JOIN SppParams AS p ON s.specobjid = p.SPECOBJID 
+                WHERE 
+                    s.class = 'STAR' 
+                    AND s.subclass LIKE 'G2%' 
+                    AND p.LOGGADOP BETWEEN 4.0 AND 4.5 
+                    AND p.FEHADOP BETWEEN -0.2 AND 0.2</textarea>
+
+                    <p style="color: #ccc;"><strong>2. Estrela Gigante</strong></p>
+                    <textarea readonly style="width: 100%; height: 110px; background: #000; color: #0f0; border: 1px solid #555; padding: 10px; font-family: monospace; border-radius: 5px; text-align: left;">SELECT TOP 10 
+                    s.specobjid, 
+                    s.subclass, 
+                    p.LOGGADOP 
+                FROM specObj AS s 
+                JOIN SppParams AS p ON s.specobjid = p.SPECOBJID 
+                WHERE 
+                    s.class = 'STAR' 
+                    AND p.LOGGADOP BETWEEN 1.0 AND 3.5</textarea>
+
+                    <p style="color: #ccc;"><strong>3. Estrela Supergigante</strong></p>
+                    <textarea readonly style="width: 100%; height: 110px; background: #000; color: #0f0; border: 1px solid #555; padding: 10px; font-family: monospace; border-radius: 5px; text-align: left;">SELECT TOP 10 
+                    s.specobjid, 
+                    s.subclass, 
+                    p.LOGGADOP 
+                FROM specObj AS s 
+                JOIN SppParams AS p ON s.specobjid = p.SPECOBJID 
+                WHERE 
+                    s.class = 'STAR' 
+                    AND p.LOGGADOP BETWEEN -0.5 AND 2.0</textarea>
+
+                    <p style="color: #ccc;"><strong>4. Anã Branca</strong></p>
+                    <p style="font-size: 0.8em; color: #888; margin-top: -10px; margin-bottom: 5px;">*Nota: Anãs Brancas não têm gravidade calculada na tabela padrão, então buscamos pela classe 'WD' ("White Dwarf").</p>
+                        <textarea readonly style="width: 100%; height: 110px; background: #000; color: #0f0; border: 1px solid #555; padding: 10px; font-family: monospace; border-radius: 5px; text-align: left;">SELECT TOP 10 
+                        s.specobjid, 
+                        s.class, 
+                        s.subClass, 
+                        s.z AS redshift 
+                    FROM SpecObj AS s 
+                    WHERE 
+                        s.class = 'STAR' 
+                        AND s.subClass LIKE 'WD%' 
+                        AND s.z BETWEEN -0.001 AND 0.001</textarea>
+                </details>
+
+                <h3>Parte 5: O processo completo</h3>
+                <ol>
+                    <li>Navegue até a ferramenta <strong>SQL Search</strong>.</li>
+                    <li>Escolha e copie um dos comandos acima.</li>
+                    <li>Apague o comando existente e cole o comando que você criou na caixa de texto do site e clique em <strong>Submit</strong>.</li>
+                    <li>Na tabela de resultados, copie um dos números da coluna <code>specobjid</code>.</li>
+                    <li>Volte à página inicial do SDSS e clique na ferramenta <strong>Explore</strong>.</li>
+                    <li>Acesse <code>Search by...</code> e cole o <code>specobjid</code> no campo apropriado (SpecObjID, apstar_id or apogee_id) para ver o espectro e todos os dados da estrela. O espectro interativo geralmente está na seção "Optical Spectra".</li>
+                </ol>
+                <p>Parabéns! Agora você sabe como usar uma ferramenta de pesquisa profissional para explorar um dos maiores catálogos de espectros do mundo.</p>
+            </div>
+
+            <hr>
+
+            <h2>📚 Referências Bibliográficas</h2>
+            <ul>
+                <li>O papel de Cecilia Payne na determinação da composição estelar: <a href="https://doi.org/10.1590/1806-9126-RBEF-2021-0028" target="_blank" style="color: #4ea8de;">https://doi.org/10.1590/1806-9126-RBEF-2021-0028</a></li>
+                <li>Raça, gênero e classe social nas ciências físicas: o silêncio dos homens: <a href="https://doi.org/10.47456/Cad.Astro.v5nEspecial.44894" target="_blank" style="color: #4ea8de;">https://doi.org/10.47456/Cad.Astro.v5nEspecial.44894</a></li>
+                <li>Oliveira, Kepler; Saraiva, Maria de Fátima Oliveira. <strong>Astronomia e astrofísica</strong>. Livraria da Física, Rio Grande do Sul, 2004.</li>
+                <li>Os dados de linhas de absorção foram retirados de: NATIONAL INSTITUTE OF STANDARDS AND TECHNOLOGY (NIST). Atomic Spectra Database. Disponível em: <a href="https://www.nist.gov/pml/atomic-spectra-database" target="_blank" style="color: #4ea8de;">https://www.nist.gov/pml/atomic-spectra-database</a>. Acesso em: 15 set. 2025.</li>
+            </ul>
+
+            <hr>
+
+            <h2>🙏 Agradecimentos</h2>
+            <p>Agradecimento especial à <strong>Larissa Luciano Amorim</strong>, doutoranda em astrofísica, pela valiosa colaboração nas aulas de astrofísica.</p>
+            <p><em>Currículo Lattes: <a href="http://lattes.cnpq.br/2024867681340986" target="_blank" style="color: #4ea8de;">http://lattes.cnpq.br/2024867681340986</a></em></p>
+
+            <details style="background: #222; padding: 10px; border-radius: 5px; margin-top: 10px; cursor: pointer;">
+                <summary style="color: #888;">Agradecimento o uso de Dados do SDSS-V</summary>
+                <p style="font-size: 0.8em; color: #888; margin-top: 10px;">
+                    O financiamento para o Sloan Digital Sky Survey V foi fornecido pela Fundação Alfred P. Sloan, pela Fundação Heising-Simons, pela Fundação Nacional de Ciência dos EUA (NSF) e pelas instituições participantes. O SDSS reconhece o apoio e os recursos do Centro de Computação de Alto Desempenho da Universidade de Utah. Os telescópios do SDSS estão localizados no Observatório Apache Point, financiado pelo Consórcio de Pesquisa Astrofísica e operado pela Universidade Estadual do Novo México, e no Observatório Las Campanas, operado pela Instituição Carnegie para a Ciência. O site do SDSS é www.sdss.org.
+                    <br><br>
+                    O SDSS é gerenciado pelo Consórcio de Pesquisa Astrofísica para as instituições participantes da colaboração SDSS, incluindo: Instituição Carnegie para a Ciência, Comitê Chileno de Alocação de Tempo (CNTAC), Caltech, Grupo de Participação Gotham, Universidade Harvard, Universidade de Heidelberg, Instituto Flatiron, Universidade Johns Hopkins, Escola Politécnica Federal de Lausanne (EPFL), Instituto Leibniz de Astrofísica de Potsdam (AIP), Instituto Max Planck de Astronomia (MPIA Heidelberg), Instituto Max Planck de Física Extraterrestre (MPE), Universidade de Nanjing, Observatórios Astronômicos Nacionais da China (NAOC), Universidade Estadual do Novo México, Universidade Estadual de Ohio, Universidade Estadual da Pensilvânia, Observatório Astrofísico Smithsonian, Instituto de Ciência do Telescópio Espacial (STScI), Grupo de Participação em Astrofísica Estelar, Universidade Nacional Autônoma do México (UNAM), Universidade do Arizona, Universidade do Colorado Boulder, Universidade de Illinois em Urbana-Champaign, Universidade de Toronto, Universidade de Utah, Universidade da Virgínia, Universidade Yale e Universidade de Yunnan.
+                </p>
+            </details>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+    <div id="modalZoom" class="modal-overlay" onclick="fecharZoom()">
+        <span class="close-btn">&times;</span>
+        <img class="modal-content" id="imgExpandida">
+        <div id="modalCaption"></div>
+    </div>
+    
+</body>
+</html>
